@@ -1,0 +1,46 @@
+﻿@page "/medications"
+@using CompensatoryMedicines.Services;
+@using Domain.Entities;
+
+@inject IMedicationManager medicationService
+
+<h1>Lista medicamentelor compensate</h1>
+
+@if (medications != null && medications.Any())
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Manufacturer</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var medication in medications)
+            {
+                <tr>
+                    <td>@medication.Name</td>
+                    <td>@medication.Manufacturer</td>
+                    <td>@medication.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No medications found.</p>
+}
+
+@code {
+    private List<Medication>? medications;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        // Set the medications property to the fake list
+        this.medications = null;
+    }
+}

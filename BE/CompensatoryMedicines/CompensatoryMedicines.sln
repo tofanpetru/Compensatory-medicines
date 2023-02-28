@@ -3,21 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompensatoryMedicines", "CompensatoryMedicines\CompensatoryMedicines.csproj", "{C91D94B9-A293-4217-AE0B-A22FE657311D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompensatoryMedicines", "CompensatoryMedicines\CompensatoryMedicines.csproj", "{C91D94B9-A293-4217-AE0B-A22FE657311D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4DB22B38-7987-4294-9C41-6341F564EC0B} = {4DB22B38-7987-4294-9C41-6341F564EC0B}
 		{B14BE080-9D15-4E9D-A4E7-E64B117106DC} = {B14BE080-9D15-4E9D-A4E7-E64B117106DC}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{4DB22B38-7987-4294-9C41-6341F564EC0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{4DB22B38-7987-4294-9C41-6341F564EC0B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7861B6D5-DB1E-44A6-9EA7-3B8CE4AF3A5E} = {7861B6D5-DB1E-44A6-9EA7-3B8CE4AF3A5E}
 		{B14BE080-9D15-4E9D-A4E7-E64B117106DC} = {B14BE080-9D15-4E9D-A4E7-E64B117106DC}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{7861B6D5-DB1E-44A6-9EA7-3B8CE4AF3A5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{7861B6D5-DB1E-44A6-9EA7-3B8CE4AF3A5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{B14BE080-9D15-4E9D-A4E7-E64B117106DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{B14BE080-9D15-4E9D-A4E7-E64B117106DC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7861B6D5-DB1E-44A6-9EA7-3B8CE4AF3A5E} = {7861B6D5-DB1E-44A6-9EA7-3B8CE4AF3A5E}
 	EndProjectSection

@@ -1,9 +1,44 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Index - Medicamente compensatorii</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container">
+    <h1>Medicamente compensate din Republica Moldova</h1>
+    <p>Această pagină are ca scop informarea utilizatorilor despre medicamentele compensate din Republica Moldova. Medicamentele compensate sunt medicamentele care sunt parțial sau în întregime plătite de stat, pentru a reduce costurile pentru pacienți. Aceste medicamente sunt disponibile în farmacii, iar lista medicamentelor compensate este actualizată periodic de către autoritățile medicale din Republica Moldova.</p>
+    <p>Pe această pagină vei găsi o listă cu medicamentele compensate din Republica Moldova, inclusiv denumirea lor si descrierea.</p>
+    <hr />
+    <div class="row">
+        @foreach (var medicament in Medicamente)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card mb-4 shadow-sm">
+                    <img src="@medicament.Imagine" class="card-img-top" alt="@medicament.Denumire">
+                    <div class="card-body">
+                        <h4 class="card-title">@medicament.Denumire</h4>
+                        <p class="card-text">@medicament.Descriere</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 
-Welcome to your new app.
+@code {
+    private List<MedicamentForIndex> Medicamente { get; set; } = new List<MedicamentForIndex>();
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    protected override void OnInitialized()
+    {
+        Medicamente.Add(new MedicamentForIndex { Denumire = "Insulina Glargină", Descriere = "Medicament pentru tratamentul diabetului zaharat de tip 1 și 2.", Imagine = "https://via.placeholder.com/300x200.png?text=Insulina+Glargin%C4%83" });
+        Medicamente.Add(new MedicamentForIndex { Denumire = "Enalaprilul", Descriere = "Medicament pentru tratamentul hipertensiunii arteriale.", Imagine = "https://via.placeholder.com/300x200.png?text=Enalaprilul" });
+        Medicamente.Add(new MedicamentForIndex { Denumire = "Levodopa/Carbidopa", Descriere = "Medicament pentru tratamentul bolii Parkinson.", Imagine = "https://via.placeholder.com/300x200.png?text=Levodopa%2FCarbidopa" });
+        Medicamente.Add(new MedicamentForIndex { Denumire = "Metformina", Descriere = "Medicament pentru tratamentul diabetului zaharat de tip 2.", Imagine = "https://via.placeholder.com/300x200.png?text=Metformina" });
+    }
+
+    public class MedicamentForIndex
+    {
+        public string Denumire { get; set; }
+        public string Descriere { get; set; }
+        public string Imagine { get; set; }
+    }
+}
+
