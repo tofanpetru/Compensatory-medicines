@@ -1,46 +1,198 @@
 ﻿@page "/medications"
 @using CompensatoryMedicines.Services;
+@using Microsoft.AspNetCore.Components.Web
 @using Domain.Entities;
-
-@inject IMedicationManager medicationService
-
+@using System.Text.Json;
+@using System.Globalization;
+@inject IMedicationService medicationService
 <h1>Lista medicamentelor compensate</h1>
 
-@if (medications != null && medications.Any())
+<div class="form-group">
+    <label for="search">Filtrare după:</label>
+    <input type="text" id="search" @bind-value="searchTerm" />
+    <button class="btn btn-primary" @onclick="OnFilterClick">Filtrare</button>
+</div>
+
+<div class="form-group">
+    <label for="commercialNameFilter">Filtrare după denumirea comercială:</label>
+    <input type="text" id="commercialNameFilter" @bind-value="commercialNameFilter" />
+    <button class="btn btn-primary" @onclick="OnCommercialNameFilterClick">Filtrare</button>
+</div>
+
+<div class="form-group">
+    <label for="approvalDateFilter">Filtrare după data de aprobare:</label>
+    <input type="date" id="approvalDateFilter" @bind-value="approvalDateFilter" />
+    <button class="btn btn-primary" @onclick="OnApprovalDateFilterClick">Filtrare</button>
+</div>
+
+@if (medications == null)
 {
-    <table>
+    <p>Loading...</p>
+}
+else if (medications.Count == 0)
+{
+    <p>No medications found.</p>
+}
+else
+{
+    <hr />
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Manufacturer</th>
-                <th>Price</th>
+                <th>Grupa maladiilor</th>
+                <th>Cod DCI</th>
+                <th>Denumirea Comuna Internationala (DCI)</th>
+                <th>Doza</th>
+                <th>Cod DC</th>
+                <th>Suma fixa compensata per unitate de masura cu TVA</th>
+                <th>Suma fixa compensata per unitate de masura fara TVA</th>
+                <th>Denumirea comerciala (DC)</th>
+                <th>Forma farmaceutica</th>
+                <th>Divizarea</th>
+                <th>Tara</th>
+                <th>Firma producatoare</th>
+                <th>Numar de inregistrare</th>
+                <th>Data inregistrarii</th>
+                <th>Cod ATC</th>
+                <th>Cod medicament (Catalogul national de preturi)</th>
+                <th>Data aprobare pret</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var medication in medications)
+            @foreach (var medication in filteredMedications)
             {
                 <tr>
-                    <td>@medication.Name</td>
-                    <td>@medication.Manufacturer</td>
-                    <td>@medication.Price</td>
+                    <td>@medication.GrupaMaladiilor</td>
+                    <td>@medication.CodDCI</td>
+                    <td>@medication.DenumireComunaInternationala</td>
+                    <td>@medication.Doza</td>
+                    <td>@medication.CodDC</td>
+                    <td>@medication.SumaFixaCompensataCuTVA</td>
+                    <td>@medication.SumaFixaCompensataFaraTVA</td>
+                    <td>@medication.DenumireComerciala</td>
+                    <td>@medication.FormaFarmaceutica</td>
+                    <td>@medication.Divizarea</td>
+                    <td>@medication.Tara</td>
+                    <td>@medication.FirmaProducatoare</td>
+                    <td>@medication.NumarInregistrare</td>
+                    <td>@medication.DataInregistrare</td>
+                    <td>@medication.CodATC</td>
+                    <td>@medication.CodMedicament</td>
+                    <td>@medication.DataAprobarePret</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => OnSaveClick(medication)">Salvare</button>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 }
-else
-{
-    <p>No medications found.</p>
-}
 
+@if (savedMedications.Count > 0)
+{
+    <h2>Medicamente salvate:</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Denumirea comercială</th>
+                <th>Producător</th>
+                <th>Preț</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var savedMedication in savedMedications)
+            {
+                <tr>
+                    <td>@savedMedication.DenumireComerciala</td>
+                    <td>@savedMedication.FirmaProducatoare</td>
+                    <td>@savedMedication.SumaFixaCompensataCuTVA</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="() => OnDeleteClick(savedMedication)">Șterge</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 @code {
     private List<Medication>? medications;
+    private List<Medication> savedMedications = new List<Medication>();
+    private List<Medication>? filteredMedications;
+    //private DateTime? startDateFilter;
+    private DateTime? approvalDateFilter;
+
+    private string? searchTerm;
+    private string? commercialNameFilter;
 
     protected override async Task OnInitializedAsync()
     {
+        medications = await medicationService.GetMedicationsAsync();
+        filteredMedications = medications;
+    }
 
+    private void OnFilterClick()
+    {
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredMedications = medications.Where(m => m.DenumireComerciala.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else
+        {
+            filteredMedications = medications;
+        }
+    }
 
-        // Set the medications property to the fake list
-        this.medications = null;
+    private void OnCommercialNameFilterClick()
+    {
+        if (!string.IsNullOrWhiteSpace(commercialNameFilter))
+        {
+            filteredMedications = medications.Where(m => m.DenumireComerciala.Contains(commercialNameFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else
+        {
+            filteredMedications = medications;
+        }
+    }
+
+    private void OnApprovalDateFilterClick()
+    {
+        if (approvalDateFilter.HasValue)
+        {
+            filteredMedications = medications.Where(m => DateTime.TryParse(m.DataAprobarePret, out var date) && date.Date >= approvalDateFilter.Value.Date && date.Date <= DateTime.Now.Date).ToList();
+        }
+        else
+        {
+            filteredMedications = medications;
+        }
+    }
+
+    private async Task OnSaveClick(Medication medication)
+    {
+        savedMedications.Add(medication);
+
+        var json = JsonSerializer.Serialize(savedMedications);
+        await jsRuntime.InvokeVoidAsync("localStorage.setItem", "savedMedications", json);
+    }
+
+    private void OnDeleteClick(Medication medication)
+    {
+        savedMedications.Remove(medication);
+
+        var json = JsonSerializer.Serialize(savedMedications);
+        jsRuntime.InvokeVoidAsync("localStorage.setItem", "savedMedications", json);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var json = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "savedMedications");
+            if (!string.IsNullOrEmpty(json))
+            {
+                savedMedications = JsonSerializer.Deserialize<List<Medication>>(json);
+            }
+        }
     }
 }

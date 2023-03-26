@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-CompensatoryMedicines-22cae413-af49-4177-8064-1d6132d6d310</UserSecretsId>
 	<ImplicitUsings>enable</ImplicitUsings>
+	<CodePage>65001</CodePage>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +19,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0" />
     <PackageReference Include="NPOI" Version="2.6.0" />
     <PackageReference Include="PdfSharpCore" Version="1.3.47" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +28,10 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\uploads\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
 </Project>

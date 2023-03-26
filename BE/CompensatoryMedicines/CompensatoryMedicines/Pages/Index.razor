@@ -22,16 +22,16 @@
         }
     </div>
 </div>
+<hr/>
 
 @code {
     private List<MedicamentForIndex> Medicamente { get; set; } = new List<MedicamentForIndex>();
 
     protected override void OnInitialized()
     {
-        Medicamente.Add(new MedicamentForIndex { Denumire = "Insulina Glargină", Descriere = "Medicament pentru tratamentul diabetului zaharat de tip 1 și 2.", Imagine = "https://via.placeholder.com/300x200.png?text=Insulina+Glargin%C4%83" });
-        Medicamente.Add(new MedicamentForIndex { Denumire = "Enalaprilul", Descriere = "Medicament pentru tratamentul hipertensiunii arteriale.", Imagine = "https://via.placeholder.com/300x200.png?text=Enalaprilul" });
-        Medicamente.Add(new MedicamentForIndex { Denumire = "Levodopa/Carbidopa", Descriere = "Medicament pentru tratamentul bolii Parkinson.", Imagine = "https://via.placeholder.com/300x200.png?text=Levodopa%2FCarbidopa" });
-        Medicamente.Add(new MedicamentForIndex { Denumire = "Metformina", Descriere = "Medicament pentru tratamentul diabetului zaharat de tip 2.", Imagine = "https://via.placeholder.com/300x200.png?text=Metformina" });
+        Medicamente.Add(new MedicamentForIndex { Denumire = "Insulina Glargină", Descriere = "Medicament pentru tratamentul diabetului zaharat de tip 1 și 2.", Imagine = "https://i.simpalsmedia.com/marketplace/products/350x350/bf93811b81c01a8be762d12c177a6150.jpg" });
+        Medicamente.Add(new MedicamentForIndex { Denumire = "Enalaprilul", Descriere = "Medicament pentru tratamentul hipertensiunii arteriale.", Imagine = "https://i.simpalsmedia.com/marketplace/products/350x350/bb3c3e4af256c47dc6e65e930820a238.jpg" });
+        Medicamente.Add(new MedicamentForIndex { Denumire = "Metformina", Descriere = "Medicament pentru tratamentul diabetului zaharat de tip 2.", Imagine = "https://i.simpalsmedia.com/marketplace/products/350x350/f983aeaaa58a07b7333b9409f2547d57.jpg" });
     }
 
     public class MedicamentForIndex
