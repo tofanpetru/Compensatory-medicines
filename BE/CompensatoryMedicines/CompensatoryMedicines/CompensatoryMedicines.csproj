@@ -4,8 +4,9 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-CompensatoryMedicines-22cae413-af49-4177-8064-1d6132d6d310</UserSecretsId>
-	<ImplicitUsings>enable</ImplicitUsings>
+	<NullableContextOptions>disable</NullableContextOptions>
+	<Nullable>disable</Nullable>
+	<UserSecretsId>aspnet-CompensatoryMedicines-22cae413-af49-4177-8064-1d6132d6d310</UserSecretsId>
 	<CodePage>65001</CodePage>
   </PropertyGroup>
 
