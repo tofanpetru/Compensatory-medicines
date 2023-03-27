@@ -1,0 +1,68 @@
+﻿@page "/saved"
+@using CompensatoryMedicines.Services;
+@using Microsoft.AspNetCore.Components.Web
+@using Domain.Entities;
+@using System.Text.Json;
+@using System.Globalization;
+@inject IMedicationService medicationService
+<h1>Lista medicamentelor salvate</h1>
+
+
+@if (savedMedications == null)
+{
+    <p>Loading...</p>
+}
+else if (savedMedications.Count == 0)
+{
+    <p>No medications found.</p>
+}
+@if (savedMedications?.Count > 0)
+{
+    <h2>Medicamente salvate:</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Denumirea comercială</th>
+                <th>Producător</th>
+                <th>Preț</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var savedMedication in savedMedications)
+            {
+                <tr>
+                    <td>@savedMedication.DenumireComerciala</td>
+                    <td>@savedMedication.FirmaProducatoare</td>
+                    <td>@savedMedication.SumaFixaCompensataCuTVA</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="() => OnDeleteClick(savedMedication)">Șterge</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private List<Medication> savedMedications = new List<Medication>();
+
+    private void OnDeleteClick(Medication medication)
+    {
+        savedMedications.Remove(medication);
+
+        var json = JsonSerializer.Serialize(savedMedications);
+        jsRuntime.InvokeVoidAsync("localStorage.setItem", "savedMedications", json);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var json = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "savedMedications");
+            if (!string.IsNullOrEmpty(json))
+            {
+                savedMedications = JsonSerializer.Deserialize<List<Medication>>(json);
+            }
+        }
+    }
+}
