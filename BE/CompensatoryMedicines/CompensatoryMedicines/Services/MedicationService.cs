@@ -2,7 +2,6 @@
 using ExcelDataReader;
 using Microsoft.Extensions.Caching.Memory;
 using System.Data;
-using System.Globalization;
 using System.Text;
 
 namespace CompensatoryMedicines.Services
