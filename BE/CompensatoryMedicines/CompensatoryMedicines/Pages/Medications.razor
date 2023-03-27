@@ -5,6 +5,7 @@
 @using System.Text.Json;
 @using System.Globalization;
 @inject IMedicationService medicationService
+
 <h1>Lista medicamentelor compensate</h1>
 
 @if (medications == null)
@@ -17,54 +18,35 @@ else if (medications.Count == 0)
 }
 else
 {
-    <hr />
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Denumirea comerciala (DC)</th>
-                <th>Grupa maladiilor</th>
-                <th>Tara</th>
-                <th>Firma producatoare</th>
-                <th>Cod DCI</th>
-                <th>Denumirea Comuna Internationala (DCI)</th>
-                <th>Doza</th>
-                <th>Cod DC</th>
-                <th>Suma fixa compensata per unitate de masura cu TVA</th>
-                <th>Suma fixa compensata per unitate de masura fara TVA</th>
-                <th>Forma farmaceutica</th>
-                <th>Divizarea</th> 
-                <th>Numar de inregistrare</th>
-                <th>Data inregistrarii</th>
-                <th>Cod ATC</th>
-                <th>Cod medicament (Catalogul national de preturi)</th>
-                <th>Data aprobare pret</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var medication in medications)
-            {
-                <tr>
-                    <td>@medication.DenumireComerciala</td>
-                    <td>@medication.GrupaMaladiilor</td>
-                    <td>@medication.Tara</td>
-                    <td>@medication.FirmaProducatoare</td>
-                    <td>@medication.CodDCI</td>
-                    <td>@medication.DenumireComunaInternationala</td>
-                    <td>@medication.Doza</td>
-                    <td>@medication.CodDC</td>
-                    <td>@medication.SumaFixaCompensataCuTVA</td>
-                    <td>@medication.SumaFixaCompensataFaraTVA</td>
-                    <td>@medication.FormaFarmaceutica</td>
-                    <td>@medication.Divizarea</td>
-                    <td>@medication.NumarInregistrare</td>
-                    <td>@medication.DataInregistrare</td>
-                    <td>@medication.CodATC</td>
-                    <td>@medication.CodMedicament</td>
-                    <td>@medication.DataAprobarePret</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <RadzenGrid TItem="Medication" 
+        Data="@medications" 
+        PageSize="7" 
+        AllowFiltering="true"
+        AllowPaging="true"
+        AllowSorting="true"
+        ShowPagingSummary="true"
+        AllowColumnResize="true"
+        AllowColumnReorder="true">
+        <Columns>
+            <RadzenGridColumn TItem="Medication" Property="DenumireComerciala" Title="Denumirea comerciala (DC)" />
+            <RadzenGridColumn TItem="Medication" Property="GrupaMaladiilor" Title="Grupa maladiilor" />
+            <RadzenGridColumn TItem="Medication" Property="Tara" Title="Tara" />
+            <RadzenGridColumn TItem="Medication" Property="FirmaProducatoare" Title="Firma producatoare" />
+            <RadzenGridColumn TItem="Medication" Property="CodDCI" Title="Cod DCI" />
+            <RadzenGridColumn TItem="Medication" Property="DenumireComunaInternationala" Title="Denumirea Comuna Internationala (DCI)" />
+            <RadzenGridColumn TItem="Medication" Property="Doza" Title="Doza" />
+            <RadzenGridColumn TItem="Medication" Property="CodDC" Title="Cod DC" />
+@*            <RadzenGridColumn TItem="Medication" Property="SumaFixaCompensataCuTVA" Title="Suma fixa compensata per unitate de masura cu TVA" />
+            <RadzenGridColumn TItem="Medication" Property="SumaFixaCompensataFaraTVA" Title="Suma fixa compensata per unitate de masura fara TVA" />
+            <RadzenGridColumn TItem="Medication" Property="FormaFarmaceutica" Title="Forma farmaceutica" />
+            <RadzenGridColumn TItem="Medication" Property="Divizarea" Title="Divizarea" />
+            <RadzenGridColumn TItem="Medication" Property="NumarInregistrare" Title="Numar de inregistrare" />
+            <RadzenGridColumn TItem="Medication" Property="DataInregistrare" Title="Data inregistrarii" />
+            <RadzenGridColumn TItem="Medication" Property="CodATC" Title="Cod ATC" />
+            <RadzenGridColumn TItem="Medication" Property="CodMedicament" Title="Cod medicament (Catalogul national de preturi)" />
+            <RadzenGridColumn TItem="Medication" Property="DataAprobarePret" Title="Data aprobare pret" />*@
+        </Columns>
+    </RadzenGrid>
 }
 
 @code {
