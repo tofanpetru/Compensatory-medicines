@@ -10,7 +10,7 @@
 
 @if (medications == null)
 {
-    <p>Loading...</p>
+    <Spinner />
 }
 else if (medications.Count == 0)
 {
@@ -18,42 +18,58 @@ else if (medications.Count == 0)
 }
 else
 {
-    <RadzenGrid TItem="Medication" 
-        Data="@medications" 
+    <RadzenButton Text="Export XLS" Icon="grid_on" Click="@(args => Export("excel"))" class="mb-4 me-2" />
+    <RadzenButton Text="Export CSV" Icon="wrap_text" Click="@(args => Export("csv"))" class="mb-4" />
+    <RadzenDataGrid TItem="Medication"
+                Data="@medications" 
         PageSize="7" 
         AllowFiltering="true"
         AllowPaging="true"
         AllowSorting="true"
         ShowPagingSummary="true"
         AllowColumnResize="true"
-        AllowColumnReorder="true">
+        
+        FilterMode="FilterMode.Advanced"
+        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+        LogicalFilterOperator="LogicalFilterOperator.Or" 
+        FilterPopupRenderMode="PopupRenderMode.OnDemand"
+        AllowColumnPicking="true">
+
         <Columns>
-            <RadzenGridColumn TItem="Medication" Property="DenumireComerciala" Title="Denumirea comerciala (DC)" />
-            <RadzenGridColumn TItem="Medication" Property="GrupaMaladiilor" Title="Grupa maladiilor" />
-            <RadzenGridColumn TItem="Medication" Property="Tara" Title="Tara" />
-            <RadzenGridColumn TItem="Medication" Property="FirmaProducatoare" Title="Firma producatoare" />
-            <RadzenGridColumn TItem="Medication" Property="CodDCI" Title="Cod DCI" />
-            <RadzenGridColumn TItem="Medication" Property="DenumireComunaInternationala" Title="Denumirea Comuna Internationala (DCI)" />
-            <RadzenGridColumn TItem="Medication" Property="Doza" Title="Doza" />
-            <RadzenGridColumn TItem="Medication" Property="CodDC" Title="Cod DC" />
-@*            <RadzenGridColumn TItem="Medication" Property="SumaFixaCompensataCuTVA" Title="Suma fixa compensata per unitate de masura cu TVA" />
-            <RadzenGridColumn TItem="Medication" Property="SumaFixaCompensataFaraTVA" Title="Suma fixa compensata per unitate de masura fara TVA" />
-            <RadzenGridColumn TItem="Medication" Property="FormaFarmaceutica" Title="Forma farmaceutica" />
-            <RadzenGridColumn TItem="Medication" Property="Divizarea" Title="Divizarea" />
-            <RadzenGridColumn TItem="Medication" Property="NumarInregistrare" Title="Numar de inregistrare" />
-            <RadzenGridColumn TItem="Medication" Property="DataInregistrare" Title="Data inregistrarii" />
-            <RadzenGridColumn TItem="Medication" Property="CodATC" Title="Cod ATC" />
-            <RadzenGridColumn TItem="Medication" Property="CodMedicament" Title="Cod medicament (Catalogul national de preturi)" />
-            <RadzenGridColumn TItem="Medication" Property="DataAprobarePret" Title="Data aprobare pret" />*@
+            <RadzenDataGridColumn TItem="Medication" Property="DenumireComerciala" Title="Denumirea comerciala" Frozen="true" Width="80px" TextAlign="TextAlign.Center" Sortable="false" />
+            <RadzenDataGridColumn TItem="Medication" Property="GrupaMaladiilor" Title="Grupa maladiilor" Frozen="true" />
+            <RadzenDataGridColumn TItem="Medication" Property="Tara" Title="Tara" Frozen="true">
+                <FooterTemplate>
+                    Total tari: <b>@_uniqueTaraCount</b>
+                </FooterTemplate>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Medication" Property="FirmaProducatoare" Title="Firma" />
+            <RadzenDataGridColumn TItem="Medication" Property="CodDCI" Title="Cod DCI" />
+            <RadzenDataGridColumn TItem="Medication" Property="DenumireComunaInternationala" Title="Denumirea Comuna Internationala" />
+            <RadzenDataGridColumn TItem="Medication" Property="Doza" Title="Doza" />
+            <RadzenDataGridColumn TItem="Medication" Property="CodDC" Title="Cod DC" />
+            <RadzenDataGridColumn TItem="Medication" Property="SumaFixaCompensataCuTVA" Title="Suma compensata per unitate de masura cu TVA" />
+            <RadzenDataGridColumn TItem="Medication" Property="SumaFixaCompensataFaraTVA" Title="Suma compensata per unitate de masura fara TVA" />
+            <RadzenDataGridColumn TItem="Medication" Property="FormaFarmaceutica" Title="Forma farmaceutica" />
+            <RadzenDataGridColumn TItem="Medication" Property="Divizarea" Title="Divizarea" />
+            <RadzenDataGridColumn TItem="Medication" Property="NumarInregistrare" Title="Nr de inregistrare" />
+            <RadzenDataGridColumn TItem="Medication" Property="DataInregistrare" Title="Data inregistrarii" />
+            <RadzenDataGridColumn TItem="Medication" Property="CodATC" Title="Cod ATC" />
+            <RadzenDataGridColumn TItem="Medication" Property="CodMedicament" Title="Cod medicament" />
+            <RadzenDataGridColumn TItem="Medication" Property="DataAprobarePret" Title="Data aprobare pret" />
         </Columns>
-    </RadzenGrid>
+    </RadzenDataGrid>
 }
 
 @code {
     private List<Medication> medications;
+    private int _uniqueTaraCount;
 
     protected override async Task OnInitializedAsync()
     {
         medications = await medicationService.GetMedicationsAsync();
+        _uniqueTaraCount = medications.Select(m => m.Tara).Distinct().ToHashSet().Count;
     }
+
+    
 }
