@@ -18,8 +18,6 @@ else if (medications.Count == 0)
 }
 else
 {
-    <RadzenButton Text="Export XLS" Icon="grid_on" Click="@(args => Export("excel"))" class="mb-4 me-2" />
-    <RadzenButton Text="Export CSV" Icon="wrap_text" Click="@(args => Export("csv"))" class="mb-4" />
     <RadzenDataGrid TItem="Medication"
                 Data="@medications" 
         PageSize="7" 
