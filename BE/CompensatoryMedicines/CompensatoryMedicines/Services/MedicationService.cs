@@ -2,6 +2,7 @@
 using ExcelDataReader;
 using Microsoft.Extensions.Caching.Memory;
 using System.Data;
+using System.Globalization;
 using System.Text;
 
 namespace CompensatoryMedicines.Services
@@ -70,6 +71,8 @@ namespace CompensatoryMedicines.Services
             for (int i = 1; i < dataTable.Rows.Count; i++)
             {
                 DataRow row = dataTable.Rows[i];
+                DateTime.TryParseExact(row[columnIndex["Data înregistrării"]].ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dataInregistrare);
+
                 var medication = new Medication
                 {
                     GrupaMaladiilor = row[columnIndex["Grupa maladiilor pentru compensare "]].ToString(),
@@ -85,7 +88,7 @@ namespace CompensatoryMedicines.Services
                     Tara = row[columnIndex["Ţara"]].ToString(),
                     FirmaProducatoare = row[columnIndex["Firma producătoare"]].ToString(),
                     NumarInregistrare = row[columnIndex["Număr de înregistrare"]].ToString(),
-                    DataInregistrare = Convert.ToDateTime(row[columnIndex["Data înregistrării"]]),
+                    DataInregistrare = dataInregistrare,
                     CodATC = row[columnIndex["Cod ATC"]].ToString(),
                     CodMedicament = row[columnIndex["Cod medicament (Catalogul național de prețuri)"]].ToString(),
                     DataAprobarePret = row[columnIndex["Data aprobării preţului de Agenția Medicamentului și Dispozitivelor medicale"]].ToString()
