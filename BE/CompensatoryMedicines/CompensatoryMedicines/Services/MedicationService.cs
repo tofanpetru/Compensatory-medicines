@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Data;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace CompensatoryMedicines.Services
 {
@@ -102,10 +103,43 @@ namespace CompensatoryMedicines.Services
 
         private async Task<Stream> DownloadExcelAsync()
         {
-            var response = await _httpClient.GetAsync(ExcelUrl);
+            var url = "http://www.cnam.md/index.php?page=295";
+            var response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadAsStreamAsync();
+            var content = await response.Content.ReadAsStringAsync();
+            var htmlDocument = new HtmlAgilityPack.HtmlDocument();
+            htmlDocument.LoadHtml(content);
+
+            var linkNode = htmlDocument.DocumentNode.SelectSingleNode("//a[contains(., 'Lista Denumirilor Comerciale compensate')]");
+
+            if (linkNode == null)
+            {
+                throw new InvalidOperationException("Link-ul cu denumirile comerciale compensate nu a fost găsit.");
+            }
+
+            var excelUrl = linkNode.GetAttributeValue("href", string.Empty);
+            var dateRegex = new Regex(@"\((\d{2}\.\d{2}\.\d{4})\)");
+            var match = dateRegex.Match(linkNode.InnerText);
+            if (match.Success)
+            {
+                DateTime.TryParseExact(match.Groups[1].Value, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime excelDate);
+
+                if (excelDate > DateTime.Now)
+                {
+                    throw new InvalidOperationException("Data din link-ul Excel este mai mare decât data actuală.");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Data nu a fost găsită în link-ul Excel.");
+            }
+
+            // Acum descarcă Excel-ul
+            var excelResponse = await _httpClient.GetAsync("http://www.cnam.md" + excelUrl);
+            excelResponse.EnsureSuccessStatusCode();
+
+            return await excelResponse.Content.ReadAsStreamAsync();
         }
     }
 }

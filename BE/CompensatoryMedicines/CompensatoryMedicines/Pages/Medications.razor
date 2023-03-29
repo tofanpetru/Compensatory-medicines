@@ -18,45 +18,47 @@ else if (medications.Count == 0)
 }
 else
 {
-    <RadzenDataGrid TItem="Medication"
-                Data="@medications" 
-        PageSize="7" 
-        AllowFiltering="true"
-        AllowPaging="true"
-        AllowSorting="true"
-        ShowPagingSummary="true"
-        AllowColumnResize="true"
-        
-        FilterMode="FilterMode.Advanced"
-        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-        LogicalFilterOperator="LogicalFilterOperator.Or" 
-        FilterPopupRenderMode="PopupRenderMode.OnDemand"
-        AllowColumnPicking="true">
+    <div class="container">
+        <RadzenDataGrid TItem="Medication"
+                    Data="@medications"
+                    PageSize="9"
+                    AllowFiltering="true"
+                    AllowPaging="true"
+                    AllowSorting="true"
+                    ShowPagingSummary="true"
+                    AllowColumnResize="true"
+                    FilterMode="FilterMode.Advanced"
+                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                    LogicalFilterOperator="LogicalFilterOperator.Or"
+                    FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                    AllowColumnPicking="true">
 
-        <Columns>
-            <RadzenDataGridColumn TItem="Medication" Property="DenumireComerciala" Title="Denumirea comerciala" Frozen="true" Width="80px" TextAlign="TextAlign.Center" Sortable="false" />
-            <RadzenDataGridColumn TItem="Medication" Property="GrupaMaladiilor" Title="Grupa maladiilor" Frozen="true" />
-            <RadzenDataGridColumn TItem="Medication" Property="Tara" Title="Tara" Frozen="true">
-                <FooterTemplate>
-                    Total tari: <b>@_uniqueTaraCount</b>
-                </FooterTemplate>
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="Medication" Property="FirmaProducatoare" Title="Firma" />
-            <RadzenDataGridColumn TItem="Medication" Property="CodDCI" Title="Cod DCI" />
-            <RadzenDataGridColumn TItem="Medication" Property="DenumireComunaInternationala" Title="Denumirea Comuna Internationala" />
-            <RadzenDataGridColumn TItem="Medication" Property="Doza" Title="Doza" />
-            <RadzenDataGridColumn TItem="Medication" Property="CodDC" Title="Cod DC" />
-            <RadzenDataGridColumn TItem="Medication" Property="SumaFixaCompensataCuTVA" Title="Suma compensata per unitate de masura cu TVA" />
-            <RadzenDataGridColumn TItem="Medication" Property="SumaFixaCompensataFaraTVA" Title="Suma compensata per unitate de masura fara TVA" />
-            <RadzenDataGridColumn TItem="Medication" Property="FormaFarmaceutica" Title="Forma farmaceutica" />
-            <RadzenDataGridColumn TItem="Medication" Property="Divizarea" Title="Divizarea" />
-            <RadzenDataGridColumn TItem="Medication" Property="NumarInregistrare" Title="Nr de inregistrare" />
-            <RadzenDataGridColumn TItem="Medication" Property="DataInregistrare" Title="Data inregistrarii" />
-            <RadzenDataGridColumn TItem="Medication" Property="CodATC" Title="Cod ATC" />
-            <RadzenDataGridColumn TItem="Medication" Property="CodMedicament" Title="Cod medicament" />
-            <RadzenDataGridColumn TItem="Medication" Property="DataAprobarePret" Title="Data aprobare pret" />
-        </Columns>
-    </RadzenDataGrid>
+            <Columns>
+                <RadzenDataGridColumn TItem="Medication" Property="DenumireComerciala" Title="Denumirea comerciala" Frozen="true" Width="9.37rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="FirmaProducatoare" Title="Firma" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="GrupaMaladiilor" Title="Grupa maladiilor" Width="15.625rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="Tara" Title="Tara" Width="4.6875rem">
+                    <FooterTemplate>
+                        Total: <b>@_uniqueTaraCount</b>
+                    </FooterTemplate>
+                </RadzenDataGridColumn>
+                
+                <RadzenDataGridColumn TItem="Medication" Property="CodDCI" Title="Cod DCI" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="DenumireComunaInternationala" Title="Denumirea Comuna Internationala" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="Doza" Title="Doza" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="CodDC" Title="Cod DC" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="SumaFixaCompensataCuTVA" Title="Suma compensata per unitate de masura cu TVA" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="SumaFixaCompensataFaraTVA" Title="Suma compensata per unitate de masura fara TVA" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="FormaFarmaceutica" Title="Forma farmaceutica" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="Divizarea" Title="Divizarea" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="NumarInregistrare" Title="Nr de inregistrare" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="DataInregistrare" Title="Data inregistrarii" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="CodATC" Title="Cod ATC" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="CodMedicament" Title="Cod medicament" Width="10rem" />
+                <RadzenDataGridColumn TItem="Medication" Property="DataAprobarePret" Title="Data aprobare pret" Width="10rem" />
+            </Columns>
+        </RadzenDataGrid>
+    </div>
 }
 
 @code {

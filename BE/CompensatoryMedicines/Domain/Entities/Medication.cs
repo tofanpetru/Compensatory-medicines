@@ -2,6 +2,7 @@
 {
     public class Medication
     {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string? GrupaMaladiilor { get; set; }
         public string? CodDCI { get; set; }
         public string? DenumireComunaInternationala { get; set; }
