@@ -31,7 +31,8 @@ namespace CompensatoryMedicines.Services
 
             if (!_memoryCache.TryGetValue(cacheKey, out List<Medication> medications))
             {
-                using var excelStream = await GetExcelStreamAsync();
+                var excelData = await GetExcelStreamAsync();
+                using var excelStream = new MemoryStream(excelData);
                 medications = GetMedicationFromExcel(excelStream, tab);
 
                 if (medications != null)
@@ -56,22 +57,15 @@ namespace CompensatoryMedicines.Services
             return medications;
         }
 
-        private async Task<Stream> GetExcelStreamAsync()
+        private async Task<byte[]> GetExcelStreamAsync()
         {
             const string excelCacheKey = "excel_file";
-            if (!_memoryCache.TryGetValue(excelCacheKey, out Stream excelStream))
+            if (!_memoryCache.TryGetValue(excelCacheKey, out byte[] excelData))
             {
-                excelStream = await DownloadExcelAsync();
-                _memoryCache.Set(excelCacheKey, excelStream, TimeSpan.FromHours(6));
+                excelData = await DownloadExcelAsync();
+                _memoryCache.Set(excelCacheKey, excelData, TimeSpan.FromHours(6));
             }
-            return excelStream;
-        }
-
-        private async Task<List<Medication>> DownloadAndParseExcelAsync(DCTabs tab)
-        {
-            using var excelStream = await DownloadExcelAsync();
-
-            return GetMedicationFromExcel(excelStream, tab);
+            return excelData;
         }
 
         private static List<Medication> GetMedicationFromExcel(Stream excelStream, DCTabs tab)
@@ -146,7 +140,7 @@ namespace CompensatoryMedicines.Services
             return defaultValue;
         }
 
-        private async Task<Stream> DownloadExcelAsync()
+        private async Task<byte[]> DownloadExcelAsync()
         {
             var url = "http://www.cnam.md/index.php?page=295";
             var response = await _httpClient.GetAsync(url);
@@ -180,11 +174,10 @@ namespace CompensatoryMedicines.Services
                 throw new InvalidOperationException("Data nu a fost găsită în link-ul Excel.");
             }
 
-            // Acum descarcă Excel-ul
             var excelResponse = await _httpClient.GetAsync("http://www.cnam.md" + excelUrl);
             excelResponse.EnsureSuccessStatusCode();
 
-            return await excelResponse.Content.ReadAsStreamAsync();
+            return await excelResponse.Content.ReadAsByteArrayAsync();
         }
     }
 }
