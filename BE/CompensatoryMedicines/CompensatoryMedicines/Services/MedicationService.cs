@@ -29,23 +29,26 @@ namespace CompensatoryMedicines.Services
             // Generate a cache key based on the selected DCTabs value
             var cacheKey = $"medications_{tab}";
 
-            if (_memoryCache.TryGetValue(cacheKey, out List<Medication> medications))
+            if (!_memoryCache.TryGetValue(cacheKey, out List<Medication> medications))
             {
-                return medications;
+                medications = await DownloadAndParseExcelAsync(tab);
+                if (medications != null)
+                {
+                    TimeSpan cacheExpirationTime = tab switch
+                    {
+                        DCTabs.FullCompensated => TimeSpan.FromHours(6),
+                        DCTabs.PartialCompensated => TimeSpan.FromDays(1),
+                        DCTabs.Covid19 => TimeSpan.FromDays(7),
+                        _ => throw new ArgumentException("Invalid DCTabs value", nameof(tab))
+                    };
+
+                    _memoryCache.Set(cacheKey, medications, cacheExpirationTime);
+                }
             }
 
-            medications = await DownloadAndParseExcelAsync(tab);
-            if (medications != null)
+            if (medications == null)
             {
-                TimeSpan cacheExpirationTime = tab switch
-                {
-                    DCTabs.FullCompensated => TimeSpan.FromHours(6),
-                    DCTabs.PartialCompensated => TimeSpan.FromDays(1),
-                    DCTabs.Covid19 => TimeSpan.FromDays(7),
-                    _ => throw new ArgumentException("Invalid DCTabs value", nameof(tab))
-                };
-
-                _memoryCache.Set(cacheKey, medications, cacheExpirationTime);
+                throw new Exception($"No medications found for the {tab} tab.");
             }
 
             return medications;
