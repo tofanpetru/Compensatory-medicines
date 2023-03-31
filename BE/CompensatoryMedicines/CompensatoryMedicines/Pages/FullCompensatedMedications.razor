@@ -1,0 +1,15 @@
+﻿@page "/FullCompensatedMedications"
+@inject IMedicationService medicationService
+
+<h1>Lista medicamentelor partial compensate</h1>
+
+<Medications Items="@medications" />
+
+@code {
+    private IReadOnlyList<Medication> medications;
+
+    protected override async Task OnInitializedAsync()
+    {
+        medications = await medicationService.GetMedicationsAsync(DCTabs.FullCompensated);
+    }
+}

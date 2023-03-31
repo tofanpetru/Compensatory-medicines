@@ -1,18 +1,16 @@
-﻿@page "/medications"
+﻿@inherits Microsoft.AspNetCore.Components.ComponentBase
 @using CompensatoryMedicines.Services;
+@using Domain.Enums;
 @using Microsoft.AspNetCore.Components.Web
 @using Domain.Entities;
 @using System.Text.Json;
 @using System.Globalization;
-@inject IMedicationService medicationService
 
-<h1>Lista medicamentelor compensate</h1>
-
-@if (medications == null)
+@if (Items == null)
 {
     <Spinner />
 }
-else if (medications.Count == 0)
+else if (Items.Count == 0)
 {
     <p>No medications found.</p>
 }
@@ -20,7 +18,7 @@ else
 {
     <div class="container">
         <RadzenDataGrid TItem="Medication"
-                    Data="@medications"
+                    Data="@Items"
                     PageSize="9"
                     AllowFiltering="true"
                     AllowPaging="true"
@@ -42,7 +40,7 @@ else
                         Total: <b>@_uniqueTaraCount</b>
                     </FooterTemplate>
                 </RadzenDataGridColumn>
-                
+
                 <RadzenDataGridColumn TItem="Medication" Property="CodDCI" Title="Cod DCI" Width="10rem" />
                 <RadzenDataGridColumn TItem="Medication" Property="DenumireComunaInternationala" Title="Denumirea Comuna Internationala" Width="10rem" />
                 <RadzenDataGridColumn TItem="Medication" Property="Doza" Title="Doza" Width="10rem" />
@@ -62,14 +60,16 @@ else
 }
 
 @code {
-    private List<Medication> medications;
+    [Parameter]
+    public IReadOnlyList<Medication> Items { get; set; }
+
     private int _uniqueTaraCount;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnParametersSet()
     {
-        medications = await medicationService.GetMedicationsAsync();
-        _uniqueTaraCount = medications.Select(m => m.Tara).Distinct().ToHashSet().Count;
+        if (Items != null)
+        {
+            _uniqueTaraCount = Items.Select(m => m.Tara).Distinct().Count();
+        }
     }
-
-    
 }
