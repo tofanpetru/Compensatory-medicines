@@ -14,14 +14,43 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Acasa
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="medications">
+        <div class="nav-item px-3" style="color:white;">
+            <NavLink class="nav-link" @onclick="()=>expandSubNav = !expandSubNav">
                 <span class="oi oi-medical-cross" aria-hidden="true"></span> Medicamente
+            </NavLink>
+            @if (expandSubNav)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="PartialCompensatedMedications">
+                            <span class="oi oi-dollar" aria-hidden="true"></span> Partial compensate
+                        </NavLink>
+                    </li>
+                </ul>
+                <ul class="nav flex-column">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="FullCompensatedMedications">
+                            <span class="oi oi-check" aria-hidden="true"></span> 100% compensate
+                        </NavLink>
+                    </li>
+                </ul>
+                <ul class="nav flex-column">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="CovidMedications">
+                            <span class="oi oi-bug" aria-hidden="true"></span> COVID 19
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="http://www.cnam.md/index.php?page=313">
+                <span class="oi oi-document" aria-hidden="true"></span> Acte normative
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="saved">
-                <span class="oi oi-bookmark" aria-hidden="true"></span> Salvate
+            <NavLink class="nav-link" href="http://www.cnam.md/index.php?page=280">
+                <span class="oi oi-heart" aria-hidden="true"></span> Dispozitive medicale
             </NavLink>
         </div>
         <div class="nav-item px-3">
@@ -34,6 +63,7 @@
 
 @code {
     private bool collapseNavMenu = true;
+    private bool expandSubNav;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
