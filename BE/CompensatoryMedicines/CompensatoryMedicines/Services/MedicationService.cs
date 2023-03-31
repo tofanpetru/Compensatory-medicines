@@ -31,7 +31,9 @@ namespace CompensatoryMedicines.Services
 
             if (!_memoryCache.TryGetValue(cacheKey, out List<Medication> medications))
             {
-                medications = await DownloadAndParseExcelAsync(tab);
+                using var excelStream = await GetExcelStreamAsync();
+                medications = GetMedicationFromExcel(excelStream, tab);
+
                 if (medications != null)
                 {
                     TimeSpan cacheExpirationTime = tab switch
@@ -52,6 +54,17 @@ namespace CompensatoryMedicines.Services
             }
 
             return medications;
+        }
+
+        private async Task<Stream> GetExcelStreamAsync()
+        {
+            const string excelCacheKey = "excel_file";
+            if (!_memoryCache.TryGetValue(excelCacheKey, out Stream excelStream))
+            {
+                excelStream = await DownloadExcelAsync();
+                _memoryCache.Set(excelCacheKey, excelStream, TimeSpan.FromHours(6));
+            }
+            return excelStream;
         }
 
         private async Task<List<Medication>> DownloadAndParseExcelAsync(DCTabs tab)
