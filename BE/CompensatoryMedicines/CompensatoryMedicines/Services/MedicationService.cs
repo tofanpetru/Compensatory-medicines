@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using ExcelDataReader;
 using Microsoft.Extensions.Caching.Memory;
 using System.Data;
@@ -10,53 +11,65 @@ namespace CompensatoryMedicines.Services
 {
     public interface IMedicationService
     {
-        Task<List<Medication>> GetMedicationsAsync();
+        Task<List<Medication>> GetMedicationsAsync(DCTabs tab);
     }
 
     public class MedicationService : IMedicationService
     {
         private readonly HttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
-        private const string CacheKey = "medications";
-        private const string ExcelUrl = "http://www.cnam.md/httpdocs/editorDir/file/MedicamenteCompensate/farmacii/2023/1/Lista%20DC%20CNAM%20(28_01_2023)_SITE.xls";
-
         public MedicationService(HttpClient httpClient, IMemoryCache memoryCache)
         {
             _httpClient = httpClient;
             _memoryCache = memoryCache;
         }
 
-        public async Task<List<Medication>> GetMedicationsAsync()
+        public async Task<List<Medication>> GetMedicationsAsync(DCTabs tab)
         {
-            if (_memoryCache.TryGetValue(CacheKey, out List<Medication> medications))
+            // Generate a cache key based on the selected DCTabs value
+            var cacheKey = $"medications_{tab}";
+
+            if (_memoryCache.TryGetValue(cacheKey, out List<Medication> medications))
             {
                 return medications;
             }
 
-            medications = await DownloadAndParseExcelAsync();
+            medications = await DownloadAndParseExcelAsync(tab);
             if (medications != null)
             {
-                _memoryCache.Set(CacheKey, medications, TimeSpan.FromDays(1));
+                TimeSpan cacheExpirationTime = tab switch
+                {
+                    DCTabs.FullCompensated => TimeSpan.FromHours(6),
+                    DCTabs.PartialCompensated => TimeSpan.FromDays(1),
+                    DCTabs.Covid19 => TimeSpan.FromDays(7),
+                    _ => throw new ArgumentException("Invalid DCTabs value", nameof(tab))
+                };
+
+                _memoryCache.Set(cacheKey, medications, cacheExpirationTime);
             }
 
             return medications;
         }
 
-        private async Task<List<Medication>> DownloadAndParseExcelAsync()
+        private async Task<List<Medication>> DownloadAndParseExcelAsync(DCTabs tab)
         {
-            var medications = new List<Medication>();
-
             using var excelStream = await DownloadExcelAsync();
-            using var excelReader = ExcelReaderFactory.CreateReader(excelStream, new ExcelReaderConfiguration() { FallbackEncoding = Encoding.UTF8 });
 
-            var dataSet = excelReader.AsDataSet();
+            return GetMedicationFromExcel(excelStream, tab);
+        }
 
-            DataTable dataTable = dataSet.Tables[0];
+        private static List<Medication> GetMedicationFromExcel(Stream excelStream, DCTabs tab)
+        {
+            IExcelDataReader excelReader = ExcelReaderFactory.CreateReader(
+                excelStream,
+                new ExcelReaderConfiguration() { FallbackEncoding = Encoding.UTF8 });
+
+            DataTable dataTable = excelReader.AsDataSet().Tables[(int)tab];
 
             var columnIndex = new Dictionary<string, int>();
             for (int i = 0; i < dataTable.Columns.Count; i++)
             {
-                var columnName = dataTable.Rows[0][i].ToString();
+                var columnName = dataTable.Rows[0][i].ToString().TrimEnd();
                 if (columnIndex.ContainsKey(columnName))
                 {
                     var suffix = 2;
@@ -69,6 +82,7 @@ namespace CompensatoryMedicines.Services
                 columnIndex.Add(columnName, i);
             }
 
+            var medications = new List<Medication>();
             for (int i = 1; i < dataTable.Rows.Count; i++)
             {
                 DataRow row = dataTable.Rows[i];
@@ -76,29 +90,44 @@ namespace CompensatoryMedicines.Services
 
                 var medication = new Medication
                 {
-                    GrupaMaladiilor = row[columnIndex["Grupa maladiilor pentru compensare "]].ToString(),
-                    CodDCI = row[columnIndex["Cod DCI"]].ToString(),
-                    DenumireComunaInternationala = row[columnIndex["Denumirea Comuna Internationala (DCI)"]].ToString(),
-                    Doza = row[columnIndex["Doza în SI MC"]].ToString(),
-                    CodDC = row[columnIndex["Cod DC"]].ToString(),
-                    SumaFixaCompensataCuTVA = Convert.ToDecimal(row[columnIndex["Suma fixă compensată per unitate de măsură inclusiv TVA"]]),
-                    SumaFixaCompensataFaraTVA = Convert.ToDecimal(row[columnIndex["Suma fixă compensată per unitate de măsură fără TVA"]]),
-                    DenumireComerciala = row[columnIndex["Denumirea comercială (DC)"]].ToString(),
-                    FormaFarmaceutica = row[columnIndex["Forma farmaceutică"]].ToString(),
-                    Divizarea = row[columnIndex["Divizarea"]].ToString(),
-                    Tara = row[columnIndex["Ţara"]].ToString(),
-                    FirmaProducatoare = row[columnIndex["Firma producătoare"]].ToString(),
-                    NumarInregistrare = row[columnIndex["Număr de înregistrare"]].ToString(),
+                    GrupaMaladiilor = GetColumnValue<string>(row, columnIndex, "Grupa maladiilor pentru compensare"),
+                    CodDCI = GetColumnValue<string>(row, columnIndex, "Cod DCI"),
+                    DenumireComunaInternationala = GetColumnValue<string>(row, columnIndex, "Denumirea Comuna Internationala (DCI)"),
+                    Doza = GetColumnValue<string>(row, columnIndex, "Doza în SI MC"),
+                    CodDC = GetColumnValue<string>(row, columnIndex, "Cod DC"),
+                    SumaFixaCompensataCuTVA = GetColumnValue<decimal>(row, columnIndex, "Suma fixă compensată per unitate de măsură inclusiv TVA"),
+                    SumaFixaCompensataFaraTVA = GetColumnValue<decimal>(row, columnIndex, "Suma fixă compensată per unitate de măsură fără TVA"),
+                    DenumireComerciala = GetColumnValue<string>(row, columnIndex, "Denumirea comercială (DC)"),
+                    FormaFarmaceutica = GetColumnValue<string>(row, columnIndex, "Forma farmaceutică"),
+                    Divizarea = GetColumnValue<string>(row, columnIndex, "Divizarea"),
+                    Tara = GetColumnValue<string>(row, columnIndex, "Ţara"),
+                    FirmaProducatoare = GetColumnValue<string>(row, columnIndex, "Firma producătoare"),
+                    NumarInregistrare = GetColumnValue<string>(row, columnIndex, "Număr de înregistrare"),
                     DataInregistrare = dataInregistrare,
-                    CodATC = row[columnIndex["Cod ATC"]].ToString(),
-                    CodMedicament = row[columnIndex["Cod medicament (Catalogul național de prețuri)"]].ToString(),
-                    DataAprobarePret = row[columnIndex["Data aprobării preţului de Agenția Medicamentului și Dispozitivelor medicale"]].ToString()
+                    CodATC = GetColumnValue<string>(row, columnIndex, "Cod ATC"),
+                    CodMedicament = GetColumnValue<string>(row, columnIndex, "Cod medicament (Catalogul național de prețuri)"),
+                    DataAprobarePret = GetColumnValue<string>(row, columnIndex, "Data aprobării preţului de Agenția Medicamentului și Dispozitivelor medicale")
                 };
+
 
                 medications.Add(medication);
             }
 
             return medications;
+        }
+
+        private static T GetColumnValue<T>(DataRow row, Dictionary<string, int> columnIndex, string columnName, T defaultValue = default)
+        {
+            if (columnIndex.TryGetValue(columnName, out int index) && row.ItemArray.Length > index)
+            {
+                var value = row[columnIndex[columnName]];
+                if (value != null && value != DBNull.Value)
+                {
+                    return (T)Convert.ChangeType(value, typeof(T));
+                }
+            }
+
+            return defaultValue;
         }
 
         private async Task<Stream> DownloadExcelAsync()
