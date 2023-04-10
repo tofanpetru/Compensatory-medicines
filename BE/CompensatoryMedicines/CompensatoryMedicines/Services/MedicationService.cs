@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Enums;
 using ExcelDataReader;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Memory;
 using System.Data;
 using System.Globalization;
@@ -14,6 +15,7 @@ namespace CompensatoryMedicines.Services
         Task<List<Medication>> GetMedicationsAsync(DCTabs tab);
     }
 
+    [Authorize]
     public class MedicationService : IMedicationService
     {
         private readonly HttpClient _httpClient;
